@@ -1,0 +1,24 @@
+{
+  
+  "name": "lesson5",
+  "version": "1.0.0",
+  "main": "dist/app.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/app.js",
+    "dev": "ts-node src/app.ts"
+  },
+
+
+  "dependencies": {
+    "class-validator": "^0.14.3",
+    "express": "^5.2.1",
+    "reflect-metadata": "^0.2.2",
+    "routing-controllers": "^0.11.3"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  }
+}
