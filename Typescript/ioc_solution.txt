@@ -1,0 +1,77 @@
+IoC Containers & Advanced Dependency Management - FULL CHALLENGE SOLUTION
+
+1. Interfaces
+
+// src/NewsSource.ts export interface NewsSource { fetchArticles():
+Promise<string[]>; }
+
+2. Implementations
+
+// src/RSSFeedSource.ts import { Service } from “typedi”; import {
+NewsSource } from “./NewsSource”;
+
+@Service() export class RSSFeedSource implements NewsSource { async
+fetchArticles(): Promise<string[]> { return [“RSS: Article 1”, “RSS:
+Article 2”]; } }
+
+// src/APISource.ts import { Service } from “typedi”; import {
+NewsSource } from “./NewsSource”;
+
+@Service() export class APISource implements NewsSource { async
+fetchArticles(): Promise<string[]> { return [“API: Article A”, “API:
+Article B”]; } }
+
+3. Aggregator (NO CHANGE REQUIRED LATER)
+
+// src/NewsAggregator.ts import { Service, Inject } from “typedi”;
+import { RSSFeedSource } from “./RSSFeedSource”; import { NewsSource }
+from “./NewsSource”;
+
+@Service() export class NewsAggregator { constructor( @Inject(() =>
+RSSFeedSource) private source: NewsSource ) {}
+
+async getLatestArticles() { const articles = await
+this.source.fetchArticles(); articles.forEach(article =>
+console.log(article)); } }
+
+4. Swap Implementation WITHOUT Changing Aggregator
+
+// src/swap.ts import “reflect-metadata”; import { Container } from
+“typedi”; import { NewsAggregator } from “./NewsAggregator”; import {
+APISource } from “./APISource”; import { NewsSource } from
+“./NewsSource”;
+
+Container.set(NewsSource, new APISource());
+
+const aggregator = Container.get(NewsAggregator);
+aggregator.getLatestArticles();
+
+5. Mock Source for Testing
+
+// src/MockSource.ts import { Service } from “typedi”; import {
+NewsSource } from “./NewsSource”;
+
+@Service() export class MockSource implements NewsSource { async
+fetchArticles(): Promise<string[]> { return [“MOCK: Test Article 1”,
+“MOCK: Test Article 2”]; } }
+
+6. Test With Mock Injection
+
+// src/testAggregator.ts import “reflect-metadata”; import { Container }
+from “typedi”; import { NewsAggregator } from “./NewsAggregator”; import
+{ MockSource } from “./MockSource”; import { NewsSource } from
+“./NewsSource”;
+
+async function test() { Container.set(NewsSource, new MockSource());
+
+const aggregator = Container.get(NewsAggregator); await
+aggregator.getLatestArticles(); }
+
+test();
+
+7. Key Takeaways
+
+-   IoC container removes manual object creation.
+-   Dependencies can be swapped centrally.
+-   Code becomes testable using mocks.
+-   Business logic remains untouched.
